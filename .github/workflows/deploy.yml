@@ -38,6 +38,6 @@ jobs:
         with:
           context: .
           push: true
-          # We force the image name to lowercase here to avoid build errors
-          tags: ghcr.io/${{ github.repository_owner }}/downlo:latest
+          # Note: The entire tag (including 'sabu8c') MUST be lowercase
+          tags: ghcr.io/sabu8c/downlo:latest
           labels: ${{ steps.meta.outputs.labels }}
