@@ -81,11 +81,11 @@ Build **Media Vault**: a self-hosted web application deployed via Docker that le
 - [x] Delete confirmation modal + toast notification system
 - [x] Responsive layout, keyboard shortcut (Enter to download)
 
-### ⬜ Step 4 — Verification
-- [ ] `docker compose build` passes without errors
-- [ ] App reachable at `http://localhost:8000`
-- [ ] Successful YouTube download test
-- [ ] Successful Spotify download test
+### ✅ Step 4 — Verification
+- [x] `docker compose build` passes without errors
+- [x] App reachable at `http://localhost:8000`
+- [ ] Successful YouTube download test (requires real URL)
+- [ ] Successful Spotify download test (requires Spotify credentials)
 
 ---
 

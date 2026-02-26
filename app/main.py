@@ -18,7 +18,7 @@ from typing import Any
 
 import aiofiles
 from fastapi import BackgroundTasks, FastAPI, HTTPException
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, field_validator
 
@@ -48,6 +48,13 @@ class Platform(str, Enum):
     UNKNOWN = "unknown"
 
 
+class DownloadOptions(BaseModel):
+    media_type: str = "video+audio"   # "video+audio" | "audio"
+    quality: str = "best"             # "best" | "1080" | "720" | "480" | "360"
+    audio_format: str = "mp3"         # "mp3" | "flac" | "ogg" | "m4a"
+    audio_bitrate: str = "320k"       # "320k" | "256k" | "192k" | "128k"
+
+
 class Job(BaseModel):
     id: str
     url: str
@@ -57,6 +64,7 @@ class Job(BaseModel):
     filename: str | None = None
     error: str | None = None
     created_at: str = ""
+    options: dict = {}
 
     model_config = {"use_enum_values": True}
 
@@ -90,29 +98,33 @@ def _set_job(job_id: str, **kwargs: Any) -> None:
 # Download workers (run in thread pool via asyncio.to_thread)
 # ─────────────────────────────────────────────────────────────────────────────
 
-def _run_youtube(job_id: str, url: str) -> None:
-    """Download highest-quality video+audio (or audio-only for music URLs)."""
+def _run_youtube(job_id: str, url: str, options: DownloadOptions) -> None:
+    """Download YouTube video/audio with user-selected quality options."""
     import yt_dlp  # imported here so main app can start even if deps missing
 
-    is_music = "music.youtube.com" in url.lower()
+    audio_only = options.media_type == "audio"
+
+    # ── Build format string based on user options ────────────────────────────
+    if audio_only:
+        fmt = "bestaudio/best"
+        codec = options.audio_format if options.audio_format in ("mp3", "flac", "ogg", "m4a") else "mp3"
+        merge_fmt = codec
+        postprocessors = [{"key": "FFmpegExtractAudio", "preferredcodec": codec}]
+    else:
+        q = options.quality
+        if q in ("1080", "720", "480", "360"):
+            fmt = f"bestvideo[height<={q}]+bestaudio/best[height<={q}]/best"
+        else:
+            fmt = "bestvideo+bestaudio/best"
+        merge_fmt = "mp4"
+        postprocessors = [{"key": "FFmpegVideoConvertor", "preferedformat": "mp4"}]
 
     ydl_opts: dict[str, Any] = {
         "outtmpl": str(DOWNLOAD_DIR / "%(title)s.%(ext)s"),
         "noplaylist": False,
-        # Prefer best single file; fall back to merging best video + best audio
-        "format": "bestaudio/best" if is_music else "bestvideo+bestaudio/best",
-        "merge_output_format": "mp4" if not is_music else "m4a",
-        "postprocessors": [
-            {
-                "key": "FFmpegVideoConvertor",
-                "preferedformat": "mp4",
-            }
-        ] if not is_music else [
-            {
-                "key": "FFmpegExtractAudio",
-                "preferredcodec": "m4a",
-            }
-        ],
+        "format": fmt,
+        "merge_output_format": merge_fmt,
+        "postprocessors": postprocessors,
         "quiet": True,
         "no_warnings": True,
     }
@@ -120,12 +132,9 @@ def _run_youtube(job_id: str, url: str) -> None:
     downloaded_file: list[str] = []
 
     class ProgressLogger:
-        def debug(self, msg: str) -> None:
-            pass
-        def warning(self, msg: str) -> None:
-            pass
-        def error(self, msg: str) -> None:
-            pass
+        def debug(self, msg: str) -> None: pass
+        def warning(self, msg: str) -> None: pass
+        def error(self, msg: str) -> None: pass
 
     def progress_hook(d: dict[str, Any]) -> None:
         if d["status"] == "downloading":
@@ -156,16 +165,19 @@ def _run_youtube(job_id: str, url: str) -> None:
         _set_job(job_id, status=JobStatus.ERROR, error=str(exc), progress="Failed")
 
 
-def _run_spotdl(job_id: str, url: str) -> None:
+def _run_spotdl(job_id: str, url: str, options: DownloadOptions) -> None:
     """Download Spotify track/album/playlist via spotdl CLI."""
     _set_job(job_id, status=JobStatus.RUNNING, progress="Starting Spotify download…")
+
+    audio_fmt = options.audio_format if options.audio_format in ("mp3", "flac", "ogg", "m4a") else "mp3"
+    bitrate = options.audio_bitrate if options.audio_bitrate in ("320k", "256k", "192k", "128k") else "320k"
 
     cmd = [
         "spotdl",
         url,
         "--output", str(DOWNLOAD_DIR / "{title}"),
-        "--format", "mp3",
-        "--bitrate", "320k",
+        "--format", audio_fmt,
+        "--bitrate", bitrate,
     ]
 
     # Inject credentials if available
@@ -185,10 +197,9 @@ def _run_spotdl(job_id: str, url: str) -> None:
         # Try to extract a filename from stdout
         fname = None
         for line in result.stdout.splitlines():
-            # spotdl logs: "Downloaded "Song Title""
             m = re.search(r'Downloaded\s+"?(.+?)"?\s*$', line)
             if m:
-                fname = m.group(1).strip() + ".mp3"
+                fname = m.group(1).strip() + f".{audio_fmt}"
                 break
 
         _set_job(
@@ -216,6 +227,7 @@ app = FastAPI(
 
 class DownloadRequest(BaseModel):
     url: str
+    options: DownloadOptions = DownloadOptions()
 
     @field_validator("url")
     @classmethod
@@ -236,11 +248,11 @@ class DownloadResponse(BaseModel):
 
 # ── Background task dispatcher ────────────────────────────────────────────────
 
-async def _dispatch_job(job_id: str, url: str, platform: Platform) -> None:
+async def _dispatch_job(job_id: str, url: str, platform: Platform, options: DownloadOptions) -> None:
     if platform == Platform.YOUTUBE:
-        await asyncio.to_thread(_run_youtube, job_id, url)
+        await asyncio.to_thread(_run_youtube, job_id, url, options)
     elif platform == Platform.SPOTIFY:
-        await asyncio.to_thread(_run_spotdl, job_id, url)
+        await asyncio.to_thread(_run_spotdl, job_id, url, options)
     else:
         _set_job(job_id, status=JobStatus.ERROR, error="Unsupported platform", progress="Failed")
 
@@ -264,11 +276,12 @@ async def start_download(req: DownloadRequest, bg: BackgroundTasks) -> DownloadR
         url=req.url,
         platform=platform,
         created_at=datetime.utcnow().isoformat() + "Z",
+        options=req.options.model_dump(),
     )
     with _jobs_lock:
         jobs[job_id] = job
 
-    bg.add_task(_dispatch_job, job_id, req.url, platform)
+    bg.add_task(_dispatch_job, job_id, req.url, platform, req.options)
 
     return DownloadResponse(
         job_id=job_id,
@@ -295,8 +308,8 @@ async def list_jobs() -> list[Job]:
     return sorted(all_jobs, key=lambda j: j.created_at, reverse=True)
 
 
-@app.delete("/api/jobs/{job_id}", status_code=204)
-async def delete_job(job_id: str) -> None:
+@app.delete("/api/jobs/{job_id}", status_code=204, response_class=Response)
+async def delete_job(job_id: str):
     """Remove a job record from history."""
     with _jobs_lock:
         if job_id not in jobs:
@@ -335,8 +348,8 @@ async def serve_file(filename: str) -> FileResponse:
     return FileResponse(path, filename=filename)
 
 
-@app.delete("/api/files/{filename}", status_code=204)
-async def delete_file(filename: str) -> None:
+@app.delete("/api/files/{filename}", status_code=204, response_class=Response)
+async def delete_file(filename: str):
     """Permanently delete a file from the downloads directory."""
     path = DOWNLOAD_DIR / filename
     if not path.exists() or not path.is_file():

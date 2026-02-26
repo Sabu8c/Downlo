@@ -1,36 +1,102 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Media Vault</title>
-  <meta name="description" content="Self-hosted YouTube & Spotify downloader. Save the highest-quality media to your own server." />
+  <meta name="description"
+    content="Self-hosted YouTube & Spotify downloader. Save the highest-quality media to your own server." />
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    * { font-family: 'Inter', sans-serif; }
+    * {
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Theme variables ── */
+    :root {
+      --bg-body: #f1f5f9;
+      --bg-body-g1: rgba(99, 102, 241, .08);
+      --bg-body-g2: rgba(168, 85, 247, .06);
+      --bg-glass: rgba(255, 255, 255, .75);
+      --border-glass: rgba(148, 163, 184, .18);
+      --bg-input: rgba(241, 245, 249, .9);
+      --border-input: rgba(203, 213, 225, .6);
+      --bg-bar: #e2e8f0;
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #94a3b8;
+      --tab-active: #6366f1;
+      --tab-inactive: #94a3b8;
+      --scrollbar: #cbd5e1;
+      --bg-select: #f8fafc;
+      --border-select: rgba(203, 213, 225, .6);
+      --seg-bg: #e2e8f0;
+      --seg-active: #fff;
+      --seg-active-text: #6366f1;
+      --seg-inactive-text: #64748b;
+      --seg-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    }
+
+    .dark {
+      --bg-body: #020817;
+      --bg-body-g1: rgba(99, 102, 241, .18);
+      --bg-body-g2: rgba(168, 85, 247, .14);
+      --bg-glass: rgba(15, 23, 42, .72);
+      --border-glass: rgba(148, 163, 184, .10);
+      --bg-input: rgba(30, 41, 59, .6);
+      --border-input: rgba(51, 65, 85, .6);
+      --bg-bar: #1e293b;
+      --text-primary: #e2e8f0;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --tab-active: #a5b4fc;
+      --tab-inactive: #64748b;
+      --scrollbar: #334155;
+      --bg-select: rgba(30, 41, 59, .8);
+      --border-select: rgba(51, 65, 85, .6);
+      --seg-bg: rgba(30, 41, 59, .8);
+      --seg-active: rgba(99, 102, 241, .25);
+      --seg-active-text: #a5b4fc;
+      --seg-inactive-text: #64748b;
+      --seg-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+    }
 
     /* ── Scrollbar ── */
-    ::-webkit-scrollbar { width: 6px; height: 6px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 99px; }
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar);
+      border-radius: 99px;
+    }
 
     /* ── Gradient background ── */
     body {
-      background: #020817;
+      background: var(--bg-body);
       background-image:
-        radial-gradient(ellipse 80% 50% at 20% -10%, rgba(99,102,241,.18) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 40% at 90% 110%, rgba(168,85,247,.14) 0%, transparent 55%);
+        radial-gradient(ellipse 80% 50% at 20% -10%, var(--bg-body-g1) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 90% 110%, var(--bg-body-g2) 0%, transparent 55%);
       min-height: 100vh;
+      color: var(--text-primary);
+      transition: background .3s, color .3s;
     }
 
     /* ── Glass cards ── */
     .glass {
-      background: rgba(15, 23, 42, 0.72);
+      background: var(--bg-glass);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(148,163,184,.10);
+      border: 1px solid var(--border-glass);
+      transition: background .3s, border-color .3s;
     }
 
     /* ── Gradient text ── */
@@ -44,75 +110,241 @@
     /* ── Glow button ── */
     .btn-glow {
       background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-      box-shadow: 0 0 24px rgba(99,102,241,.4);
+      box-shadow: 0 0 24px rgba(99, 102, 241, .4);
       transition: box-shadow .2s, transform .15s;
     }
+
     .btn-glow:hover {
-      box-shadow: 0 0 36px rgba(168,85,247,.55);
+      box-shadow: 0 0 36px rgba(168, 85, 247, .55);
       transform: translateY(-1px);
     }
-    .btn-glow:active { transform: translateY(0); }
 
-    /* ── Input glow on focus ── */
+    .btn-glow:active {
+      transform: translateY(0);
+    }
+
+    /* ── Input ── */
+    .url-input {
+      background: var(--bg-input);
+      border-color: var(--border-input);
+      color: var(--text-primary);
+      transition: background .3s, border-color .3s, color .3s;
+    }
+
     .url-input:focus {
       outline: none;
-      box-shadow: 0 0 0 2px rgba(99,102,241,.45);
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, .45);
     }
 
     /* ── Progress bar animation ── */
     @keyframes shimmer {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
+      0% {
+        background-position: -200% center
+      }
+
+      100% {
+        background-position: 200% center
+      }
     }
+
     .progress-bar {
       background: linear-gradient(90deg, #6366f1 0%, #a855f7 50%, #6366f1 100%);
       background-size: 200% auto;
       animation: shimmer 1.8s linear infinite;
     }
+
     .progress-bar-done {
       background: linear-gradient(90deg, #34d399, #10b981);
     }
+
     .progress-bar-error {
       background: #ef4444;
       animation: none;
     }
 
     /* ── Platform badge ── */
-    .badge-yt  { background: rgba(239,68,68,.15);  color: #f87171; border: 1px solid rgba(239,68,68,.3); }
-    .badge-sp  { background: rgba(52,211,153,.12); color: #34d399; border: 1px solid rgba(52,211,153,.3); }
+    .badge-yt {
+      background: rgba(239, 68, 68, .15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, .3);
+    }
+
+    .badge-sp {
+      background: rgba(52, 211, 153, .12);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, .3);
+    }
 
     /* ── Status pills ── */
-    .pill-queued  { background: rgba(148,163,184,.12); color: #94a3b8; }
-    .pill-running { background: rgba(99,102,241,.18);  color: #a5b4fc; }
-    .pill-done    { background: rgba(52,211,153,.15);  color: #34d399; }
-    .pill-error   { background: rgba(239,68,68,.15);   color: #f87171; }
+    .pill-queued {
+      background: rgba(148, 163, 184, .12);
+      color: #94a3b8;
+    }
+
+    .pill-running {
+      background: rgba(99, 102, 241, .18);
+      color: #a5b4fc;
+    }
+
+    .pill-done {
+      background: rgba(52, 211, 153, .15);
+      color: #34d399;
+    }
+
+    .pill-error {
+      background: rgba(239, 68, 68, .15);
+      color: #f87171;
+    }
 
     /* ── File card hover ── */
-    .file-card { transition: background .18s, border-color .18s; }
-    .file-card:hover { background: rgba(99,102,241,.08); border-color: rgba(99,102,241,.3); }
+    .file-card {
+      transition: background .18s, border-color .18s;
+    }
 
-    /* ── Tab active ── */
+    .file-card:hover {
+      background: rgba(99, 102, 241, .08);
+      border-color: rgba(99, 102, 241, .3);
+    }
+
+    /* ── Tab ── */
     .tab-active {
-      color: #a5b4fc;
+      color: var(--tab-active);
       border-bottom: 2px solid #6366f1;
     }
+
     .tab-inactive {
-      color: #64748b;
+      color: var(--tab-inactive);
       border-bottom: 2px solid transparent;
     }
-    .tab-inactive:hover { color: #94a3b8; }
 
-    /* ── Fade-in ── */
-    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
-    .fade-in { animation: fadeIn .3s ease both; }
+    .tab-inactive:hover {
+      color: var(--text-secondary);
+    }
 
-    /* ── Spin ── */
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .spin { animation: spin 1s linear infinite; }
+    /* ── Animations ── */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
 
-    /* ── Pulse dot ── */
-    @keyframes pulseDot { 0%,100% { opacity:1; } 50% { opacity:.3; } }
-    .pulse-dot { animation: pulseDot 1.4s ease infinite; }
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .fade-in {
+      animation: fadeIn .3s ease both;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg)
+      }
+    }
+
+    .spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes pulseDot {
+
+      0%,
+      100% {
+        opacity: 1
+      }
+
+      50% {
+        opacity: .3
+      }
+    }
+
+    .pulse-dot {
+      animation: pulseDot 1.4s ease infinite;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-btn {
+      background: var(--seg-bg);
+      border: 1px solid var(--border-glass);
+      transition: background .2s, border-color .2s;
+    }
+
+    .theme-btn:hover {
+      border-color: #6366f1;
+    }
+
+    .theme-btn svg {
+      transition: transform .3s;
+    }
+
+    /* ── Options panel ── */
+    .opts-toggle {
+      color: var(--text-muted);
+      transition: color .15s;
+      cursor: pointer;
+    }
+
+    .opts-toggle:hover {
+      color: var(--tab-active);
+    }
+
+    .opts-select {
+      background: var(--bg-select);
+      border: 1px solid var(--border-select);
+      color: var(--text-primary);
+      border-radius: .5rem;
+      padding: .4rem .6rem;
+      font-size: .8rem;
+      transition: all .2s;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2394a3b8' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right .5rem center;
+      padding-right: 1.6rem;
+    }
+
+    .opts-select:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 2px rgba(99, 102, 241, .25);
+    }
+
+    .seg-group {
+      display: inline-flex;
+      background: var(--seg-bg);
+      border-radius: .5rem;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .seg-btn {
+      padding: .3rem .7rem;
+      border-radius: .4rem;
+      font-size: .75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      color: var(--seg-inactive-text);
+      background: transparent;
+      transition: all .18s;
+    }
+
+    .seg-btn.active {
+      background: var(--seg-active);
+      color: var(--seg-active-text);
+      box-shadow: var(--seg-shadow);
+    }
+
+    .opt-label {
+      font-size: .7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--text-muted);
+      margin-bottom: .25rem;
+    }
   </style>
 
   <script>
@@ -122,7 +354,7 @@
         extend: {
           colors: {
             surface: '#0f172a',
-            card:    '#111827',
+            card: '#111827',
           }
         }
       }
@@ -130,344 +362,495 @@
   </script>
 </head>
 
-<body class="text-slate-200 min-h-screen">
+<body class="min-h-screen">
 
-<!-- ══════════════════════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════════════════════════
      HEADER
 ══════════════════════════════════════════════════════════════ -->
-<header class="glass sticky top-0 z-50 border-b border-slate-800/60">
-  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-    <div class="flex items-center gap-3">
-      <!-- Vault icon -->
-      <div class="w-9 h-9 rounded-xl btn-glow flex items-center justify-center flex-shrink-0">
-        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
-        </svg>
-      </div>
-      <div>
-        <h1 class="text-lg font-bold grad-text leading-none">Media Vault</h1>
-        <p class="text-xs text-slate-500 mt-0.5">Self-hosted media downloader</p>
-      </div>
-    </div>
-    <!-- Live connection indicator -->
-    <div class="flex items-center gap-2 text-xs text-slate-400">
-      <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
-      <span id="conn-label">Live</span>
-    </div>
-  </div>
-</header>
-
-<!-- ══════════════════════════════════════════════════════════════
-     MAIN
-══════════════════════════════════════════════════════════════ -->
-<main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
-
-  <!-- ── Download Input Card ──────────────────────────────────── -->
-  <section class="glass rounded-2xl p-7 fade-in">
-    <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-5">New Download</h2>
-
-    <!-- URL input row -->
-    <div class="flex gap-3">
-      <div class="relative flex-1">
-        <!-- Platform icon (changes dynamically) -->
-        <div id="platform-icon" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none transition-all duration-200">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <header class="glass sticky top-0 z-50 border-b border-slate-800/60">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <!-- Vault icon -->
+        <div class="w-9 h-9 rounded-xl btn-glow flex items-center justify-center flex-shrink-0">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/>
+              d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
           </svg>
         </div>
-        <input
-          id="url-input"
-          type="url"
-          placeholder="Paste a YouTube or Spotify URL…"
-          class="url-input w-full bg-slate-800/60 border border-slate-700/60 rounded-xl pl-11 pr-4 py-3.5 text-sm text-slate-100 placeholder-slate-500 transition-all duration-200"
-          autocomplete="off"
-          spellcheck="false"
-        />
+        <div>
+          <h1 class="text-lg font-bold grad-text leading-none">Media Vault</h1>
+          <p class="text-xs text-slate-500 mt-0.5">Self-hosted media downloader</p>
+        </div>
       </div>
-      <button
-        id="download-btn"
-        onclick="submitDownload()"
-        class="btn-glow text-white font-semibold text-sm px-6 py-3.5 rounded-xl flex items-center gap-2 whitespace-nowrap"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      <!-- Live indicator + Theme toggle -->
+      <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2 text-xs" style="color:var(--text-muted)">
+          <span id="conn-dot" class="w-2 h-2 rounded-full bg-emerald-400 pulse-dot"></span>
+          <span id="conn-label">Live</span>
+        </div>
+        <button id="theme-toggle" onclick="toggleTheme()"
+          class="theme-btn w-8 h-8 rounded-lg flex items-center justify-center" title="Toggle theme">
+          <svg id="icon-sun" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg id="icon-moon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════════════════════════
+     MAIN
+══════════════════════════════════════════════════════════════ -->
+  <main class="max-w-5xl mx-auto px-6 py-10 space-y-8">
+
+    <!-- ── Download Input Card ──────────────────────────────────── -->
+    <section class="glass rounded-2xl p-7 fade-in">
+      <h2 class="text-sm font-semibold text-slate-400 uppercase tracking-wider mb-5">New Download</h2>
+
+      <!-- URL input row -->
+      <div class="flex gap-3">
+        <div class="relative flex-1">
+          <!-- Platform icon (changes dynamically) -->
+          <div id="platform-icon"
+            class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none transition-all duration-200">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+          </div>
+          <input id="url-input" type="url" placeholder="Paste a YouTube or Spotify URL…"
+            class="url-input w-full bg-slate-800/60 border border-slate-700/60 rounded-xl pl-11 pr-4 py-3.5 text-sm text-slate-100 placeholder-slate-500 transition-all duration-200"
+            autocomplete="off" spellcheck="false" />
+        </div>
+        <button id="download-btn" onclick="submitDownload()"
+          class="btn-glow text-white font-semibold text-sm px-6 py-3.5 rounded-xl flex items-center gap-2 whitespace-nowrap">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2"
+              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Download
+        </button>
+      </div>
+
+      <!-- Platform hint pill -->
+      <div id="platform-hint" class="mt-3 flex items-center gap-2 h-6"></div>
+
+      <!-- ── Download Options Panel ── -->
+      <div id="options-panel" class="hidden mt-4 fade-in">
+        <button onclick="toggleOptions()" class="opts-toggle flex items-center gap-1.5 text-xs font-semibold mb-3">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span id="opts-toggle-label">Options</span>
+          <svg id="opts-chevron" class="w-3 h-3 transition-transform" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+        <div id="opts-body" class="hidden">
+          <!-- YouTube options -->
+          <div id="opts-youtube" class="hidden flex flex-wrap items-end gap-4">
+            <div>
+              <div class="opt-label">Media Type</div>
+              <div class="seg-group">
+                <button class="seg-btn active" data-val="video+audio" onclick="setSegment(this,'media_type')">Video +
+                  Audio</button>
+                <button class="seg-btn" data-val="audio" onclick="setSegment(this,'media_type')">Audio Only</button>
+              </div>
+            </div>
+            <div id="opt-quality-wrap">
+              <div class="opt-label">Max Resolution</div>
+              <select id="opt-quality" class="opts-select" onchange="state.dlOptions.quality=this.value">
+                <option value="best">Best available</option>
+                <option value="1080">1080p</option>
+                <option value="720">720p</option>
+                <option value="480">480p</option>
+                <option value="360">360p</option>
+              </select>
+            </div>
+            <div id="opt-yt-audio-fmt-wrap" class="hidden">
+              <div class="opt-label">Audio Format</div>
+              <select id="opt-yt-audio-fmt" class="opts-select" onchange="state.dlOptions.audio_format=this.value">
+                <option value="m4a">M4A</option>
+                <option value="mp3">MP3</option>
+                <option value="ogg">OGG</option>
+                <option value="flac">FLAC</option>
+              </select>
+            </div>
+          </div>
+          <!-- Spotify options -->
+          <div id="opts-spotify" class="hidden flex flex-wrap items-end gap-4">
+            <div>
+              <div class="opt-label">Format</div>
+              <select id="opt-sp-fmt" class="opts-select" onchange="state.dlOptions.audio_format=this.value">
+                <option value="mp3">MP3</option>
+                <option value="flac">FLAC</option>
+                <option value="ogg">OGG</option>
+                <option value="m4a">M4A</option>
+              </select>
+            </div>
+            <div>
+              <div class="opt-label">Bitrate</div>
+              <select id="opt-sp-br" class="opts-select" onchange="state.dlOptions.audio_bitrate=this.value">
+                <option value="320k">320 kbps</option>
+                <option value="256k">256 kbps</option>
+                <option value="192k">192 kbps</option>
+                <option value="128k">128 kbps</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error banner -->
+      <div id="input-error" class="hidden mt-3 text-sm text-red-400 flex items-center gap-2">
+        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd"
+            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+            clip-rule="evenodd" />
         </svg>
-        Download
+        <span id="input-error-text"></span>
+      </div>
+    </section>
+
+    <!-- ── Tabs ─────────────────────────────────────────────────── -->
+    <div class="flex gap-6 border-b border-slate-800" role="tablist">
+      <button id="tab-queue" onclick="switchTab('queue')" role="tab"
+        class="tab-active pb-3 text-sm font-semibold transition-all duration-150">
+        Queue &amp; History
+        <span id="jobs-badge"
+          class="ml-1.5 text-xs bg-indigo-500/20 text-indigo-300 rounded-full px-1.5 py-0.5">0</span>
+      </button>
+      <button id="tab-files" onclick="switchTab('files')" role="tab"
+        class="tab-inactive pb-3 text-sm font-semibold transition-all duration-150">
+        My Files
+        <span id="files-badge" class="ml-1.5 text-xs bg-slate-700 text-slate-400 rounded-full px-1.5 py-0.5">0</span>
       </button>
     </div>
 
-    <!-- Platform hint pill -->
-    <div id="platform-hint" class="mt-3 flex items-center gap-2 h-6">
-      <!-- filled by JS -->
-    </div>
-
-    <!-- Error banner -->
-    <div id="input-error" class="hidden mt-3 text-sm text-red-400 flex items-center gap-2">
-      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-      </svg>
-      <span id="input-error-text"></span>
-    </div>
-  </section>
-
-  <!-- ── Tabs ─────────────────────────────────────────────────── -->
-  <div class="flex gap-6 border-b border-slate-800" role="tablist">
-    <button id="tab-queue" onclick="switchTab('queue')" role="tab"
-      class="tab-active pb-3 text-sm font-semibold transition-all duration-150">
-      Queue &amp; History
-      <span id="jobs-badge" class="ml-1.5 text-xs bg-indigo-500/20 text-indigo-300 rounded-full px-1.5 py-0.5">0</span>
-    </button>
-    <button id="tab-files" onclick="switchTab('files')" role="tab"
-      class="tab-inactive pb-3 text-sm font-semibold transition-all duration-150">
-      My Files
-      <span id="files-badge" class="ml-1.5 text-xs bg-slate-700 text-slate-400 rounded-full px-1.5 py-0.5">0</span>
-    </button>
-  </div>
-
-  <!-- ── Queue Panel ───────────────────────────────────────────── -->
-  <section id="panel-queue" class="space-y-3 fade-in">
-    <div id="queue-empty" class="glass rounded-2xl p-12 text-center">
-      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800/60 flex items-center justify-center">
-        <svg class="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-        </svg>
+    <!-- ── Queue Panel ───────────────────────────────────────────── -->
+    <section id="panel-queue" class="space-y-3 fade-in">
+      <div id="queue-empty" class="glass rounded-2xl p-12 text-center">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800/60 flex items-center justify-center">
+          <svg class="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+          </svg>
+        </div>
+        <p class="text-slate-500 text-sm">No downloads yet. Paste a URL above to get started.</p>
       </div>
-      <p class="text-slate-500 text-sm">No downloads yet. Paste a URL above to get started.</p>
-    </div>
-    <div id="job-list" class="space-y-3"></div>
-  </section>
+      <div id="job-list" class="space-y-3"></div>
+    </section>
 
-  <!-- ── Files Panel ───────────────────────────────────────────── -->
-  <section id="panel-files" class="hidden fade-in">
-    <!-- Toolbar -->
-    <div class="flex items-center justify-between mb-4">
-      <p class="text-sm text-slate-400"><span id="files-count">0</span> files on disk</p>
-      <button onclick="loadFiles()" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors">
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-        </svg>
-        Refresh
-      </button>
-    </div>
-
-    <!-- Files empty state -->
-    <div id="files-empty" class="glass rounded-2xl p-12 text-center hidden">
-      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800/60 flex items-center justify-center">
-        <svg class="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"/>
-        </svg>
+    <!-- ── Files Panel ───────────────────────────────────────────── -->
+    <section id="panel-files" class="hidden fade-in">
+      <!-- Toolbar -->
+      <div class="flex items-center justify-between mb-4">
+        <p class="text-sm text-slate-400"><span id="files-count">0</span> files on disk</p>
+        <button onclick="loadFiles()"
+          class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1.5 transition-colors">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          Refresh
+        </button>
       </div>
-      <p class="text-slate-500 text-sm">No files downloaded yet.</p>
-    </div>
 
-    <!-- File grid -->
-    <div id="file-grid" class="space-y-2"></div>
-  </section>
+      <!-- Files empty state -->
+      <div id="files-empty" class="glass rounded-2xl p-12 text-center hidden">
+        <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-slate-800/60 flex items-center justify-center">
+          <svg class="w-7 h-7 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+              d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z" />
+          </svg>
+        </div>
+        <p class="text-slate-500 text-sm">No files downloaded yet.</p>
+      </div>
 
-</main>
+      <!-- File grid -->
+      <div id="file-grid" class="space-y-2"></div>
+    </section>
 
-<!-- ══════════════════════════════════════════════════════════════
+  </main>
+
+  <!-- ══════════════════════════════════════════════════════════════
      TOAST
 ══════════════════════════════════════════════════════════════ -->
-<div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
 
-<!-- ══════════════════════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════════════════════════
      DELETE CONFIRM MODAL
 ══════════════════════════════════════════════════════════════ -->
-<div id="modal-overlay" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-  <div class="glass rounded-2xl p-7 w-80 fade-in">
-    <h3 class="font-semibold text-slate-100 mb-2">Delete file?</h3>
-    <p class="text-sm text-slate-400 mb-6">This will permanently remove <span id="modal-filename" class="text-slate-200 font-medium"></span> from disk.</p>
-    <div class="flex gap-3">
-      <button onclick="closeModal()" class="flex-1 py-2.5 rounded-xl border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">Cancel</button>
-      <button id="modal-confirm" class="flex-1 py-2.5 rounded-xl bg-red-500/80 hover:bg-red-500 text-sm text-white font-semibold transition-colors">Delete</button>
+  <div id="modal-overlay"
+    class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+    <div class="glass rounded-2xl p-7 w-80 fade-in">
+      <h3 class="font-semibold text-slate-100 mb-2">Delete file?</h3>
+      <p class="text-sm text-slate-400 mb-6">This will permanently remove <span id="modal-filename"
+          class="text-slate-200 font-medium"></span> from disk.</p>
+      <div class="flex gap-3">
+        <button onclick="closeModal()"
+          class="flex-1 py-2.5 rounded-xl border border-slate-700 text-sm text-slate-300 hover:bg-slate-800 transition-colors">Cancel</button>
+        <button id="modal-confirm"
+          class="flex-1 py-2.5 rounded-xl bg-red-500/80 hover:bg-red-500 text-sm text-white font-semibold transition-colors">Delete</button>
+      </div>
     </div>
   </div>
-</div>
 
 
-<!-- ══════════════════════════════════════════════════════════════
+  <!-- ══════════════════════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════════════════════ -->
-<script>
-// ── State ──────────────────────────────────────────────────────────────────
-const state = {
-  jobs: {},          // job_id → job object
-  pollers: {},       // job_id → intervalId
-  activeTab: 'queue',
-};
+  <script>
+    // ── State ──────────────────────────────────────────────────────────────────
+    const state = {
+      jobs: {},
+      pollers: {},
+      activeTab: 'queue',
+      dlOptions: { media_type: 'video+audio', quality: 'best', audio_format: 'mp3', audio_bitrate: '320k' },
+      optsOpen: false,
+      currentPlatform: null,
+    };
 
-// ── Platform detection (mirrors backend logic) ──────────────────────────────
-function detectPlatform(url) {
-  const u = url.toLowerCase();
-  if (u.includes('youtube.com') || u.includes('youtu.be') || u.includes('music.youtube.com')) return 'youtube';
-  if (u.includes('spotify.com')) return 'spotify';
-  return null;
-}
+    // ── Theme toggle ─────────────────────────────────────────────────────────────
+    function applyTheme(dark) {
+      document.documentElement.classList.toggle('dark', dark);
+      document.getElementById('icon-sun').classList.toggle('hidden', dark);
+      document.getElementById('icon-moon').classList.toggle('hidden', !dark);
+    }
+    function toggleTheme() {
+      const isDark = !document.documentElement.classList.contains('dark');
+      applyTheme(isDark);
+      localStorage.setItem('mv-theme', isDark ? 'dark' : 'light');
+    }
+    applyTheme((localStorage.getItem('mv-theme') || 'dark') === 'dark');
 
-// ── URL input: live platform hint ───────────────────────────────────────────
-const urlInput = document.getElementById('url-input');
-const platformHint = document.getElementById('platform-hint');
-const platformIcon = document.getElementById('platform-icon');
+    // ── Platform detection (mirrors backend logic) ──────────────────────────────
+    function detectPlatform(url) {
+      const u = url.toLowerCase();
+      if (u.includes('youtube.com') || u.includes('youtu.be') || u.includes('music.youtube.com')) return 'youtube';
+      if (u.includes('spotify.com')) return 'spotify';
+      return null;
+    }
 
-urlInput.addEventListener('input', () => {
-  const val = urlInput.value.trim();
-  const p = val ? detectPlatform(val) : null;
-  renderPlatformHint(p);
-  hideInputError();
-});
+    // ── URL input: live platform hint ───────────────────────────────────────────
+    const urlInput = document.getElementById('url-input');
+    const platformHint = document.getElementById('platform-hint');
+    const platformIcon = document.getElementById('platform-icon');
 
-urlInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') submitDownload();
-});
-
-function renderPlatformHint(platform) {
-  if (!platform) {
-    platformHint.innerHTML = '';
-    platformIcon.innerHTML = ICON_LINK;
-    platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none transition-all duration-200';
-    return;
-  }
-  if (platform === 'youtube') {
-    platformHint.innerHTML = `<span class="badge-yt text-xs font-semibold rounded-full px-2.5 py-0.5 flex items-center gap-1.5">${ICON_YT_SMALL} YouTube detected — downloads best quality video+audio (MP4)</span>`;
-    platformIcon.innerHTML = ICON_YT_SMALL;
-    platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-red-400 pointer-events-none transition-all duration-200';
-  } else {
-    platformHint.innerHTML = `<span class="badge-sp text-xs font-semibold rounded-full px-2.5 py-0.5 flex items-center gap-1.5">${ICON_SP_SMALL} Spotify detected — downloads 320k MP3</span>`;
-    platformIcon.innerHTML = ICON_SP_SMALL;
-    platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-400 pointer-events-none transition-all duration-200';
-  }
-}
-
-// ── Download submission ─────────────────────────────────────────────────────
-async function submitDownload() {
-  const url = urlInput.value.trim();
-  if (!url) { showInputError('Please paste a URL.'); return; }
-
-  const platform = detectPlatform(url);
-  if (!platform) { showInputError('URL not recognised. Paste a YouTube or Spotify link.'); return; }
-
-  const btn = document.getElementById('download-btn');
-  btn.disabled = true;
-  btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Queuing…`;
-
-  try {
-    const resp = await fetch('/api/download', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
+    urlInput.addEventListener('input', () => {
+      const val = urlInput.value.trim();
+      const p = val ? detectPlatform(val) : null;
+      renderPlatformHint(p);
+      hideInputError();
     });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.detail || 'Server error');
 
-    urlInput.value = '';
-    renderPlatformHint(null);
-    showToast('Download queued!', 'success');
-    switchTab('queue');
-    startPolling(data.job_id);
-  } catch (err) {
-    showInputError(err.message);
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = `${ICON_DOWNLOAD_BTN} Download`;
-  }
-}
+    urlInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') submitDownload();
+    });
 
-// ── Polling ─────────────────────────────────────────────────────────────────
-function startPolling(jobId) {
-  // Fetch immediately, then every 1.5 s
-  pollJob(jobId);
-  state.pollers[jobId] = setInterval(() => pollJob(jobId), 1500);
-}
-
-async function pollJob(jobId) {
-  try {
-    const resp = await fetch(`/api/status/${jobId}`);
-    if (!resp.ok) return;
-    const job = await resp.json();
-    state.jobs[jobId] = job;
-
-    renderJobList();
-
-    // Stop polling when terminal state
-    if (job.status === 'done' || job.status === 'error') {
-      clearInterval(state.pollers[jobId]);
-      delete state.pollers[jobId];
-      if (job.status === 'done') {
-        showToast(`✓ Download complete: ${job.filename || 'file saved'}`, 'success');
-        loadFiles(); // refresh file list silently
+    function renderPlatformHint(platform) {
+      state.currentPlatform = platform;
+      const optPanel = document.getElementById('options-panel');
+      const optsYt = document.getElementById('opts-youtube');
+      const optsSp = document.getElementById('opts-spotify');
+      if (!platform) {
+        platformHint.innerHTML = '';
+        platformIcon.innerHTML = ICON_LINK;
+        platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 pointer-events-none transition-all duration-200';
+        optPanel.classList.add('hidden');
+        return;
+      }
+      optPanel.classList.remove('hidden');
+      if (platform === 'youtube') {
+        platformHint.innerHTML = `<span class="badge-yt text-xs font-semibold rounded-full px-2.5 py-0.5 flex items-center gap-1.5">${ICON_YT_SMALL} YouTube detected</span>`;
+        platformIcon.innerHTML = ICON_YT_SMALL;
+        platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-red-400 pointer-events-none transition-all duration-200';
+        optsYt.classList.remove('hidden'); optsSp.classList.add('hidden');
+        resetDlOptions('youtube');
+      } else {
+        platformHint.innerHTML = `<span class="badge-sp text-xs font-semibold rounded-full px-2.5 py-0.5 flex items-center gap-1.5">${ICON_SP_SMALL} Spotify detected</span>`;
+        platformIcon.innerHTML = ICON_SP_SMALL;
+        platformIcon.className = 'absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-emerald-400 pointer-events-none transition-all duration-200';
+        optsSp.classList.remove('hidden'); optsYt.classList.add('hidden');
+        resetDlOptions('spotify');
       }
     }
-  } catch (_) { /* network hiccup, keep polling */ }
-}
 
-// Load all existing jobs on page load
-async function loadJobs() {
-  try {
-    const resp = await fetch('/api/jobs');
-    const jobs = await resp.json();
-    jobs.forEach(j => {
-      state.jobs[j.id] = j;
-      if (j.status === 'queued' || j.status === 'running') startPolling(j.id);
-    });
-    renderJobList();
-  } catch (_) {}
-}
+    function resetDlOptions(platform) {
+      state.dlOptions = platform === 'youtube'
+        ? { media_type: 'video+audio', quality: 'best', audio_format: 'm4a', audio_bitrate: '320k' }
+        : { media_type: 'audio', quality: 'best', audio_format: 'mp3', audio_bitrate: '320k' };
+    }
 
-// ── Job list rendering ──────────────────────────────────────────────────────
-function renderJobList() {
-  const list = document.getElementById('job-list');
-  const empty = document.getElementById('queue-empty');
-  const badge = document.getElementById('jobs-badge');
+    // ── Options panel toggle & controls ───────────────────────────────────────────
+    function toggleOptions() {
+      state.optsOpen = !state.optsOpen;
+      document.getElementById('opts-body').classList.toggle('hidden', !state.optsOpen);
+      document.getElementById('opts-chevron').style.transform = state.optsOpen ? 'rotate(180deg)' : '';
+    }
+    function setSegment(btn, key) {
+      btn.parentElement.querySelectorAll('.seg-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.dlOptions[key] = btn.dataset.val;
+      // Toggle quality vs audio format for YouTube
+      if (key === 'media_type') {
+        const isAudio = btn.dataset.val === 'audio';
+        document.getElementById('opt-quality-wrap').classList.toggle('hidden', isAudio);
+        document.getElementById('opt-yt-audio-fmt-wrap').classList.toggle('hidden', !isAudio);
+      }
+    }
 
-  const jobs = Object.values(state.jobs).sort((a, b) => b.created_at.localeCompare(a.created_at));
-  badge.textContent = jobs.length;
+    // ── Download submission ─────────────────────────────────────────────────────
+    async function submitDownload() {
+      const url = urlInput.value.trim();
+      if (!url) { showInputError('Please paste a URL.'); return; }
 
-  if (jobs.length === 0) {
-    empty.style.display = 'block';
-    list.innerHTML = '';
-    return;
-  }
+      const platform = detectPlatform(url);
+      if (!platform) { showInputError('URL not recognised. Paste a YouTube or Spotify link.'); return; }
 
-  empty.style.display = 'none';
-  list.innerHTML = jobs.map(renderJobCard).join('');
-}
+      const btn = document.getElementById('download-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<svg class="w-4 h-4 spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Queuing…`;
 
-function renderJobCard(job) {
-  const isYt = job.platform === 'youtube';
-  const platformBadge = isYt
-    ? `<span class="badge-yt text-xs font-semibold rounded-full px-2 py-0.5 flex items-center gap-1">${ICON_YT_SMALL} YouTube</span>`
-    : `<span class="badge-sp text-xs font-semibold rounded-full px-2 py-0.5 flex items-center gap-1">${ICON_SP_SMALL} Spotify</span>`;
+      try {
+        const resp = await fetch('/api/download', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ url, options: { ...state.dlOptions } }),
+        });
+        const data = await resp.json();
+        if (!resp.ok) throw new Error(data.detail || 'Server error');
 
-  const pill = statusPill(job.status);
+        urlInput.value = '';
+        renderPlatformHint(null);
+        showToast('Download queued!', 'success');
+        switchTab('queue');
+        startPolling(data.job_id);
+      } catch (err) {
+        showInputError(err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `${ICON_DOWNLOAD_BTN} Download`;
+      }
+    }
 
-  const progressPercent = parseProgressPercent(job.progress);
-  const barClass = job.status === 'done' ? 'progress-bar-done' : job.status === 'error' ? 'progress-bar-error' : 'progress-bar';
-  const barWidth = job.status === 'done' ? '100%' : job.status === 'error' ? '100%' : (progressPercent ? `${progressPercent}%` : '15%');
+    // ── Polling ─────────────────────────────────────────────────────────────────
+    function startPolling(jobId) {
+      // Fetch immediately, then every 1.5 s
+      pollJob(jobId);
+      state.pollers[jobId] = setInterval(() => pollJob(jobId), 1500);
+    }
 
-  const truncUrl = job.url.length > 55 ? job.url.slice(0, 55) + '…' : job.url;
+    async function pollJob(jobId) {
+      try {
+        const resp = await fetch(`/api/status/${jobId}`);
+        if (!resp.ok) return;
+        const job = await resp.json();
+        state.jobs[jobId] = job;
 
-  const deleteBtn = (job.status === 'done' || job.status === 'error')
-    ? `<button onclick="deleteJob('${job.id}')" class="ml-2 text-slate-600 hover:text-red-400 transition-colors" title="Remove from history">
+        renderJobList();
+
+        // Stop polling when terminal state
+        if (job.status === 'done' || job.status === 'error') {
+          clearInterval(state.pollers[jobId]);
+          delete state.pollers[jobId];
+          if (job.status === 'done') {
+            showToast(`✓ Download complete: ${job.filename || 'file saved'}`, 'success');
+            loadFiles(); // refresh file list silently
+          }
+        }
+      } catch (_) { /* network hiccup, keep polling */ }
+    }
+
+    // Load all existing jobs on page load
+    async function loadJobs() {
+      try {
+        const resp = await fetch('/api/jobs');
+        const jobs = await resp.json();
+        jobs.forEach(j => {
+          state.jobs[j.id] = j;
+          if (j.status === 'queued' || j.status === 'running') startPolling(j.id);
+        });
+        renderJobList();
+      } catch (_) { }
+    }
+
+    // ── Job list rendering ──────────────────────────────────────────────────────
+    function renderJobList() {
+      const list = document.getElementById('job-list');
+      const empty = document.getElementById('queue-empty');
+      const badge = document.getElementById('jobs-badge');
+
+      const jobs = Object.values(state.jobs).sort((a, b) => b.created_at.localeCompare(a.created_at));
+      badge.textContent = jobs.length;
+
+      if (jobs.length === 0) {
+        empty.style.display = 'block';
+        list.innerHTML = '';
+        return;
+      }
+
+      empty.style.display = 'none';
+      list.innerHTML = jobs.map(renderJobCard).join('');
+    }
+
+    function renderJobCard(job) {
+      const isYt = job.platform === 'youtube';
+      const platformBadge = isYt
+        ? `<span class="badge-yt text-xs font-semibold rounded-full px-2 py-0.5 flex items-center gap-1">${ICON_YT_SMALL} YouTube</span>`
+        : `<span class="badge-sp text-xs font-semibold rounded-full px-2 py-0.5 flex items-center gap-1">${ICON_SP_SMALL} Spotify</span>`;
+
+      const pill = statusPill(job.status);
+
+      // Build options tag from job.options
+      let optsTag = '';
+      if (job.options && Object.keys(job.options).length) {
+        const o = job.options;
+        let parts = [];
+        if (isYt) {
+          if (o.media_type === 'audio') parts.push(o.audio_format?.toUpperCase() || 'M4A');
+          else { parts.push(o.quality === 'best' ? 'Best' : o.quality + 'p'); parts.push('MP4'); }
+        } else {
+          parts.push(o.audio_format?.toUpperCase() || 'MP3');
+          parts.push(o.audio_bitrate || '320k');
+        }
+        optsTag = `<span class="text-xs rounded-full px-2 py-0.5" style="background:var(--seg-bg);color:var(--text-muted)">${parts.join(' · ')}</span>`;
+      }
+
+      const progressPercent = parseProgressPercent(job.progress);
+      const barClass = job.status === 'done' ? 'progress-bar-done' : job.status === 'error' ? 'progress-bar-error' : 'progress-bar';
+      const barWidth = job.status === 'done' ? '100%' : job.status === 'error' ? '100%' : (progressPercent ? `${progressPercent}%` : '15%');
+
+      const truncUrl = job.url.length > 55 ? job.url.slice(0, 55) + '…' : job.url;
+
+      const deleteBtn = (job.status === 'done' || job.status === 'error')
+        ? `<button onclick="deleteJob('${job.id}')" class="ml-2 text-slate-600 hover:text-red-400 transition-colors" title="Remove from history">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
        </button>` : '';
 
-  const fileLink = (job.status === 'done' && job.filename)
-    ? `<a href="/api/files/${encodeURIComponent(job.filename)}" download class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors mt-1">
+      const fileLink = (job.status === 'done' && job.filename)
+        ? `<a href="/api/files/${encodeURIComponent(job.filename)}" download class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition-colors mt-1">
         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
         ${job.filename}
        </a>` : '';
 
-  return `
+      return `
   <div class="glass rounded-xl p-4 fade-in">
     <div class="flex items-start justify-between gap-3">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2 flex-wrap mb-1.5">
           ${platformBadge}
           ${pill}
+          ${optsTag}
         </div>
         <p class="text-xs text-slate-500 truncate">${truncUrl}</p>
         ${fileLink}
@@ -484,60 +867,60 @@ function renderJobCard(job) {
     <p class="text-xs text-slate-500 mt-1.5">${escHtml(job.progress)}</p>
     ${job.error ? `<p class="text-xs text-red-400 mt-1">⚠ ${escHtml(job.error)}</p>` : ''}
   </div>`;
-}
-
-function parseProgressPercent(progress) {
-  const m = progress && progress.match(/(\d+(?:\.\d+)?)\s*%/);
-  return m ? parseFloat(m[1]) : null;
-}
-
-function statusPill(status) {
-  const classes = { queued: 'pill-queued', running: 'pill-running', done: 'pill-done', error: 'pill-error' };
-  const labels = { queued: 'Queued', running: 'Downloading', done: 'Done ✓', error: 'Error' };
-  return `<span class="${classes[status] || 'pill-queued'} text-xs font-semibold rounded-full px-2 py-0.5">${labels[status] || status}</span>`;
-}
-
-async function deleteJob(jobId) {
-  await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
-  delete state.jobs[jobId];
-  renderJobList();
-}
-
-// ── File list ───────────────────────────────────────────────────────────────
-async function loadFiles() {
-  try {
-    const resp = await fetch('/api/files');
-    const files = await resp.json();
-
-    const badge = document.getElementById('files-badge');
-    const count = document.getElementById('files-count');
-    badge.textContent = files.length;
-    count.textContent = files.length;
-
-    const empty = document.getElementById('files-empty');
-    const grid = document.getElementById('file-grid');
-
-    if (files.length === 0) {
-      empty.classList.remove('hidden');
-      grid.innerHTML = '';
-      return;
     }
-    empty.classList.add('hidden');
-    grid.innerHTML = files.map(renderFileCard).join('');
-  } catch (_) {}
-}
 
-function renderFileCard(file) {
-  const ext = file.extension.toLowerCase();
-  const isVideo = ['mp4','mkv','webm','mov','avi'].includes(ext);
-  const isAudio = ['mp3','m4a','flac','wav','ogg','aac'].includes(ext);
+    function parseProgressPercent(progress) {
+      const m = progress && progress.match(/(\d+(?:\.\d+)?)\s*%/);
+      return m ? parseFloat(m[1]) : null;
+    }
 
-  const iconColor = isVideo ? 'text-indigo-400' : isAudio ? 'text-emerald-400' : 'text-slate-400';
-  const icon = isVideo ? ICON_VIDEO : isAudio ? ICON_AUDIO : ICON_FILE;
+    function statusPill(status) {
+      const classes = { queued: 'pill-queued', running: 'pill-running', done: 'pill-done', error: 'pill-error' };
+      const labels = { queued: 'Queued', running: 'Downloading', done: 'Done ✓', error: 'Error' };
+      return `<span class="${classes[status] || 'pill-queued'} text-xs font-semibold rounded-full px-2 py-0.5">${labels[status] || status}</span>`;
+    }
 
-  const modDate = new Date(file.modified).toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
+    async function deleteJob(jobId) {
+      await fetch(`/api/jobs/${jobId}`, { method: 'DELETE' });
+      delete state.jobs[jobId];
+      renderJobList();
+    }
 
-  return `
+    // ── File list ───────────────────────────────────────────────────────────────
+    async function loadFiles() {
+      try {
+        const resp = await fetch('/api/files');
+        const files = await resp.json();
+
+        const badge = document.getElementById('files-badge');
+        const count = document.getElementById('files-count');
+        badge.textContent = files.length;
+        count.textContent = files.length;
+
+        const empty = document.getElementById('files-empty');
+        const grid = document.getElementById('file-grid');
+
+        if (files.length === 0) {
+          empty.classList.remove('hidden');
+          grid.innerHTML = '';
+          return;
+        }
+        empty.classList.add('hidden');
+        grid.innerHTML = files.map(renderFileCard).join('');
+      } catch (_) { }
+    }
+
+    function renderFileCard(file) {
+      const ext = file.extension.toLowerCase();
+      const isVideo = ['mp4', 'mkv', 'webm', 'mov', 'avi'].includes(ext);
+      const isAudio = ['mp3', 'm4a', 'flac', 'wav', 'ogg', 'aac'].includes(ext);
+
+      const iconColor = isVideo ? 'text-indigo-400' : isAudio ? 'text-emerald-400' : 'text-slate-400';
+      const icon = isVideo ? ICON_VIDEO : isAudio ? ICON_AUDIO : ICON_FILE;
+
+      const modDate = new Date(file.modified).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+
+      return `
   <div class="glass file-card rounded-xl px-4 py-3 flex items-center gap-3 group">
     <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0 ${iconColor}">
       ${icon}
@@ -551,97 +934,98 @@ function renderFileCard(file) {
          class="p-1.5 rounded-lg hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 transition-colors" title="Download">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
       </a>
-      <button onclick="confirmDeleteFile('${escHtml(file.name).replace(/'/g,"\\'")}') "
+      <button onclick="confirmDeleteFile('${escHtml(file.name).replace(/'/g, "\\'")}') "
          class="p-1.5 rounded-lg hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors" title="Delete">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
       </button>
     </div>
   </div>`;
-}
+    }
 
-// ── Delete file modal ───────────────────────────────────────────────────────
-let _pendingDeleteFile = null;
+    // ── Delete file modal ───────────────────────────────────────────────────────
+    let _pendingDeleteFile = null;
 
-function confirmDeleteFile(name) {
-  _pendingDeleteFile = name;
-  document.getElementById('modal-filename').textContent = name;
-  document.getElementById('modal-overlay').classList.remove('hidden');
-  document.getElementById('modal-confirm').onclick = executedDeleteFile;
-}
+    function confirmDeleteFile(name) {
+      _pendingDeleteFile = name;
+      document.getElementById('modal-filename').textContent = name;
+      document.getElementById('modal-overlay').classList.remove('hidden');
+      document.getElementById('modal-confirm').onclick = executedDeleteFile;
+    }
 
-function closeModal() {
-  document.getElementById('modal-overlay').classList.add('hidden');
-  _pendingDeleteFile = null;
-}
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.add('hidden');
+      _pendingDeleteFile = null;
+    }
 
-async function executedDeleteFile() {
-  if (!_pendingDeleteFile) return;
-  closeModal();
-  try {
-    await fetch(`/api/files/${encodeURIComponent(_pendingDeleteFile)}`, { method: 'DELETE' });
-    showToast(`Deleted ${_pendingDeleteFile}`, 'info');
-    loadFiles();
-  } catch (_) {
-    showToast('Delete failed', 'error');
-  }
-}
+    async function executedDeleteFile() {
+      if (!_pendingDeleteFile) return;
+      closeModal();
+      try {
+        await fetch(`/api/files/${encodeURIComponent(_pendingDeleteFile)}`, { method: 'DELETE' });
+        showToast(`Deleted ${_pendingDeleteFile}`, 'info');
+        loadFiles();
+      } catch (_) {
+        showToast('Delete failed', 'error');
+      }
+    }
 
-// ── Tab switching ───────────────────────────────────────────────────────────
-function switchTab(tab) {
-  state.activeTab = tab;
-  document.getElementById('panel-queue').classList.toggle('hidden', tab !== 'queue');
-  document.getElementById('panel-files').classList.toggle('hidden', tab !== 'files');
-  ['queue','files'].forEach(t => {
-    document.getElementById(`tab-${t}`).className =
-      (t === tab ? 'tab-active' : 'tab-inactive') + ' pb-3 text-sm font-semibold transition-all duration-150';
-  });
-  if (tab === 'files') loadFiles();
-}
+    // ── Tab switching ───────────────────────────────────────────────────────────
+    function switchTab(tab) {
+      state.activeTab = tab;
+      document.getElementById('panel-queue').classList.toggle('hidden', tab !== 'queue');
+      document.getElementById('panel-files').classList.toggle('hidden', tab !== 'files');
+      ['queue', 'files'].forEach(t => {
+        document.getElementById(`tab-${t}`).className =
+          (t === tab ? 'tab-active' : 'tab-inactive') + ' pb-3 text-sm font-semibold transition-all duration-150';
+      });
+      if (tab === 'files') loadFiles();
+    }
 
-// ── Toast ───────────────────────────────────────────────────────────────────
-function showToast(msg, type = 'info') {
-  const colors = { success: 'bg-emerald-500/90', error: 'bg-red-500/90', info: 'bg-indigo-500/90' };
-  const el = document.createElement('div');
-  el.className = `pointer-events-auto text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg ${colors[type] || colors.info} fade-in`;
-  el.textContent = msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
-}
+    // ── Toast ───────────────────────────────────────────────────────────────────
+    function showToast(msg, type = 'info') {
+      const colors = { success: 'bg-emerald-500/90', error: 'bg-red-500/90', info: 'bg-indigo-500/90' };
+      const el = document.createElement('div');
+      el.className = `pointer-events-auto text-white text-sm font-medium px-4 py-3 rounded-xl shadow-lg ${colors[type] || colors.info} fade-in`;
+      el.textContent = msg;
+      document.getElementById('toast-container').appendChild(el);
+      setTimeout(() => el.remove(), 3500);
+    }
 
-// ── Error helpers ───────────────────────────────────────────────────────────
-function showInputError(msg) {
-  document.getElementById('input-error').classList.remove('hidden');
-  document.getElementById('input-error-text').textContent = msg;
-}
-function hideInputError() {
-  document.getElementById('input-error').classList.add('hidden');
-}
+    // ── Error helpers ───────────────────────────────────────────────────────────
+    function showInputError(msg) {
+      document.getElementById('input-error').classList.remove('hidden');
+      document.getElementById('input-error-text').textContent = msg;
+    }
+    function hideInputError() {
+      document.getElementById('input-error').classList.add('hidden');
+    }
 
-// ── Escape HTML ─────────────────────────────────────────────────────────────
-function escHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
+    // ── Escape HTML ─────────────────────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
 
-// ── SVG icon constants ──────────────────────────────────────────────────────
-const ICON_LINK = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`;
-const ICON_YT_SMALL = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
-const ICON_SP_SMALL = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
-const ICON_DOWNLOAD_BTN = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>`;
-const ICON_VIDEO = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>`;
-const ICON_AUDIO = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>`;
-const ICON_FILE = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
+    // ── SVG icon constants ──────────────────────────────────────────────────────
+    const ICON_LINK = `<svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>`;
+    const ICON_YT_SMALL = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>`;
+    const ICON_SP_SMALL = `<svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg>`;
+    const ICON_DOWNLOAD_BTN = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>`;
+    const ICON_VIDEO = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.069A1 1 0 0121 8.82v6.36a1 1 0 01-1.447.894L15 14M3 8a2 2 0 012-2h8a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/></svg>`;
+    const ICON_AUDIO = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/></svg>`;
+    const ICON_FILE = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"/></svg>`;
 
-// ── Init ────────────────────────────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
-  loadJobs();
-  loadFiles();
-});
+    // ── Init ────────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      loadJobs();
+      loadFiles();
+    });
 
-// Close modal on overlay click
-document.getElementById('modal-overlay').addEventListener('click', e => {
-  if (e.target === e.currentTarget) closeModal();
-});
-</script>
+    // Close modal on overlay click
+    document.getElementById('modal-overlay').addEventListener('click', e => {
+      if (e.target === e.currentTarget) closeModal();
+    });
+  </script>
 
 </body>
+
 </html>
