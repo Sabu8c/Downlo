@@ -1,5 +1,5 @@
 """
-Media Vault — FastAPI Backend
+Downlo — FastAPI Backend
 Handles background download jobs for YouTube (yt-dlp) and Spotify (spotdl).
 """
 
@@ -217,8 +217,8 @@ def _run_spotdl(job_id: str, url: str, options: DownloadOptions) -> None:
 # ─────────────────────────────────────────────────────────────────────────────
 
 app = FastAPI(
-    title="Media Vault",
-    description="Self-hosted YouTube & Spotify downloader",
+    title="Downlo",
+    description="Your personal YouTube & Spotify downloader",
     version="1.0.0",
 )
 

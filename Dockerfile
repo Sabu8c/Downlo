@@ -1,5 +1,5 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Media Vault — Dockerfile
+# Downlo — Dockerfile
 # Base: Python 3.11 slim; adds ffmpeg + yt-dlp + spotdl
 # ─────────────────────────────────────────────────────────────────────────────
 
@@ -12,9 +12,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 # ffmpeg: required by yt-dlp (merge video+audio) and spotdl (audio conversion)
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
-        ffmpeg \
-        curl \
-        ca-certificates && \
+    ffmpeg \
+    curl \
+    ca-certificates && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

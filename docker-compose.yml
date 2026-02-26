@@ -1,18 +1,18 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Media Vault — Docker Compose
+# Downlo — Docker Compose
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
-  media-vault:
+  downlo:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: media-vault
+    container_name: downlo
     restart: unless-stopped
 
     # ── Ports ──────────────────────────────────────────────────────────────────
     ports:
-      - "8000:8000"           # FastAPI / Uvicorn
+      - "8000:8000" # FastAPI / Uvicorn
 
     # ── Volumes ────────────────────────────────────────────────────────────────
     volumes:
@@ -31,7 +31,6 @@ services:
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID:-}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET:-}
       - DOWNLOAD_DIR=/app/downloads
-
     # ── Resource limits (optional, adjust to taste) ────────────────────────────
     # deploy:
     #   resources:
