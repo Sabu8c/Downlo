@@ -1,0 +1,42 @@
+version: "3.9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Media Vault — Docker Compose
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+  media-vault:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: media-vault
+    restart: unless-stopped
+
+    # ── Ports ──────────────────────────────────────────────────────────────────
+    ports:
+      - "8000:8000"           # FastAPI / Uvicorn
+
+    # ── Volumes ────────────────────────────────────────────────────────────────
+    volumes:
+      # Bind-mount host ./downloads → container /app/downloads
+      # All downloaded media persists on the host even after container restarts.
+      - ./downloads:/app/downloads
+
+      # Hot-reload: mount the app source so --reload picks up changes in dev
+      - ./app:/app
+
+    # ── Environment Variables ──────────────────────────────────────────────────
+    # Spotify integration requires a free Developer App at:
+    #   https://developer.spotify.com/dashboard
+    # Set these in a .env file next to docker-compose.yml (never commit secrets).
+    environment:
+      - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID:-}
+      - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET:-}
+      - DOWNLOAD_DIR=/app/downloads
+
+    # ── Resource limits (optional, adjust to taste) ────────────────────────────
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: "2"
+    #       memory: 2G

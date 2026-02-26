@@ -1,0 +1,15 @@
+# ── Web Framework ──────────────────────────────────────────────────────────────
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+
+# ── Download Engines ───────────────────────────────────────────────────────────
+yt-dlp==2024.5.27
+spotdl==4.2.5
+
+# ── Async / Utility ────────────────────────────────────────────────────────────
+aiofiles==23.2.1
+python-multipart==0.0.9
+
+# ── Optional but recommended ───────────────────────────────────────────────────
+# mutagen        # audio tag reading (used by spotdl internally)
+# httpx          # async HTTP client (used by spotdl internally)
