@@ -33,11 +33,14 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
+      - name: Lowercase image name
+        run: |
+          echo "IMAGE_NAME_LC=${GITHUB_REPOSITORY,,}" >> ${GITHUB_ENV}
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          # Note: The entire tag (including 'sabu8c') MUST be lowercase
-          tags: ghcr.io/sabu8c/downlo:latest
+          tags: ghcr.io/${{ env.IMAGE_NAME_LC }}:latest
           labels: ${{ steps.meta.outputs.labels }}
