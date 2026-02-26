@@ -1,12 +1,12 @@
 # ─────────────────────────────────────────────────────────────────────────────
-# Downlo — Docker Compose
+# Downlo — Docker Compose (Portainer / Production)
+# Pulls the pre-built image from GitHub Container Registry.
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
   downlo:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # !! This matches your GitHub username/repository name !!
+    image: ghcr.io/sabu8c/dowloader:latest
     container_name: downlo
     restart: unless-stopped
 
@@ -16,17 +16,15 @@ services:
 
     # ── Volumes ────────────────────────────────────────────────────────────────
     volumes:
-      # Bind-mount host ./downloads → container /app/downloads
       # All downloaded media persists on the host even after container restarts.
-      - ./downloads:/app/downloads
-
-      # Hot-reload: mount the app source so --reload picks up changes in dev
-      - ./app:/app
+      # Portainer will create this named volume automatically.
+      - downlo_downloads:/app/downloads
 
     # ── Environment Variables ──────────────────────────────────────────────────
     # Spotify integration requires a free Developer App at:
     #   https://developer.spotify.com/dashboard
-    # Set these in a .env file next to docker-compose.yml (never commit secrets).
+    # Set these in Portainer's "Env" tab when creating the stack,
+    # or in a .env file on the Portainer host.
     environment:
       - SPOTIFY_CLIENT_ID=${SPOTIFY_CLIENT_ID:-}
       - SPOTIFY_CLIENT_SECRET=${SPOTIFY_CLIENT_SECRET:-}
@@ -37,3 +35,7 @@ services:
     #     limits:
     #       cpus: "2"
     #       memory: 2G
+
+    # ── Named Volumes ──────────────────────────────────────────────────────────────
+volumes:
+  downlo_downloads:
