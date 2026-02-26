@@ -5,8 +5,8 @@
 
 services:
   downlo:
-    # !! This matches your GitHub username/repository name !!
-    image: ghcr.io/sabu8c/dowloader:latest
+    # !! This matches your GitHub username/repository name (lowercase) !!
+    image: ghcr.io/sabu8c/downlo:latest
     container_name: downlo
     restart: unless-stopped
 
