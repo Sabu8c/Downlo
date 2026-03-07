@@ -166,21 +166,27 @@ def _run_youtube(job_id: str, url: str, options: DownloadOptions) -> None:
 
 
 def _run_spotdl(job_id: str, url: str, options: DownloadOptions) -> None:
-    """Download Spotify track/album/playlist via spotdl CLI."""
+    """Download Spotify track/album/playlist via spotdl CLI (v4.x)."""
     _set_job(job_id, status=JobStatus.RUNNING, progress="Starting Spotify download…")
 
-    audio_fmt = options.audio_format if options.audio_format in ("mp3", "flac", "ogg", "m4a") else "mp3"
-    bitrate = options.audio_bitrate if options.audio_bitrate in ("320k", "256k", "192k", "128k") else "320k"
+    # spotdl v4.x accepts: mp3, flac, ogg, opus, m4a, wav
+    VALID_FORMATS = ("mp3", "flac", "ogg", "m4a", "wav", "opus")
+    audio_fmt = options.audio_format if options.audio_format in VALID_FORMATS else "mp3"
 
+    # spotdl v4.x CLI: spotdl download <url> [options]
     cmd = [
-        "spotdl",
+        "spotdl", "download",
         url,
-        "--output", str(DOWNLOAD_DIR / "{title}"),
+        "--output", str(DOWNLOAD_DIR / "{title}.{output-ext}"),
         "--format", audio_fmt,
-        "--bitrate", bitrate,
     ]
 
-    # Inject credentials if available
+    # Bitrate (auto / disable for lossless formats like flac/wav)
+    bitrate = options.audio_bitrate if options.audio_bitrate in ("320k", "256k", "192k", "128k") else None
+    if bitrate and audio_fmt not in ("flac", "wav"):
+        cmd += ["--bitrate", bitrate]
+
+    # Inject Spotify API credentials if available
     if SPOTIFY_CLIENT_ID and SPOTIFY_CLIENT_SECRET:
         cmd += ["--client-id", SPOTIFY_CLIENT_ID, "--client-secret", SPOTIFY_CLIENT_SECRET]
 
@@ -192,14 +198,18 @@ def _run_spotdl(job_id: str, url: str, options: DownloadOptions) -> None:
             cwd=str(DOWNLOAD_DIR),
         )
         if result.returncode != 0:
-            raise RuntimeError(result.stderr.strip() or "spotdl returned non-zero exit code")
+            err_msg = (result.stderr.strip() or result.stdout.strip()
+                       or "spotdl returned non-zero exit code")
+            raise RuntimeError(err_msg)
 
-        # Try to extract a filename from stdout
+        # Try to find downloaded filenames from spotdl stdout
         fname = None
         for line in result.stdout.splitlines():
             m = re.search(r'Downloaded\s+"?(.+?)"?\s*$', line)
             if m:
-                fname = m.group(1).strip() + f".{audio_fmt}"
+                fname = m.group(1).strip()
+                if not fname.endswith(f".{audio_fmt}"):
+                    fname += f".{audio_fmt}"
                 break
 
         _set_job(

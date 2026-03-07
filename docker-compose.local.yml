@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  downlo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: downlo_dev
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the local app directory for hot-reload
+      - ./app:/app
+      # Create a local downloads folder
+      - ./downloads:/app/downloads
+    env_file:
+      - .env
+    environment:
+      - DOWNLOAD_DIR=/app/downloads
+    restart: always

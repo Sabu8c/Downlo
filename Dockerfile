@@ -26,6 +26,15 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# ── Patch spotdl for Spotify API compatibility ────────────────────────────────
+# spotdl crashes with KeyError when Spotify API omits 'genres' or 'label' keys.
+# Patch song.py to use .get() with safe defaults.
+RUN SONG_PY=$(python -c "import spotdl.types.song; print(spotdl.types.song.__file__)") && \
+    sed -i 's/raw_album_meta\["genres"\]/raw_album_meta.get("genres", [])/g' "$SONG_PY" && \
+    sed -i 's/raw_artist_meta\["genres"\]/raw_artist_meta.get("genres", [])/g' "$SONG_PY" && \
+    sed -i 's/raw_album_meta\["label"\]/raw_album_meta.get("label", "")/g' "$SONG_PY" && \
+    echo "✓ Patched spotdl song.py for API compatibility"
+
 # ── Application code ──────────────────────────────────────────────────────────
 COPY ./app ./
 

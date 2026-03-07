@@ -2,7 +2,7 @@
 # spotdl pulls in fastapi + uvicorn as its own dependencies, so we only need
 # to specify the download engines. pip will resolve the rest.
 yt-dlp>=2024.5.27
-spotdl>=4.2.10
+spotdl>=4.2.10,<5.0
 
 # ── Async / Utility ────────────────────────────────────────────────────────────
 aiofiles>=23.2.1
